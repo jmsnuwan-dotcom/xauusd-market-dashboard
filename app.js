@@ -1,0 +1,11 @@
+const state={price:2347.82,buy:72};
+const news=[
+ {time:'14:30',event:'USD — High Impact Economic Data',impact:'HIGH',effect:'High volatility possible'},
+ {time:'16:00',event:'USD — ISM Services PMI',impact:'MEDIUM',effect:'Volatility may increase'},
+ {time:'19:00',event:'USD — Fed Member Speech',impact:'LOW',effect:'Possible minor movement'}
+];
+function clock(){const d=new Date();const t=d.toLocaleTimeString([], {hour12:false});document.getElementById('clock').textContent=t;document.getElementById('updated').textContent=t}
+function renderNews(){document.getElementById('newsList').innerHTML=news.map(n=>`<div class="news-row"><div class="news-time">${n.time}</div><div>${n.event}</div><div class="impact ${n.impact.toLowerCase()}">${n.impact}</div><div class="effect">${n.effect}</div></div>`).join('')}
+function render(){const buy=state.buy,sell=100-buy;document.getElementById('buyPct').textContent=buy+'%';document.getElementById('sellPct').textContent=sell+'%';document.getElementById('buyBar').style.width=buy+'%';document.getElementById('sellBar').style.width=sell+'%';document.getElementById('price').textContent=state.price.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});document.getElementById('chartPrice').textContent=state.price.toFixed(2);const dir=buy>=55?'BUY':buy<=45?'SELL':'NEUTRAL';document.getElementById('direction').textContent=dir;document.getElementById('directionArrow').textContent=dir==='BUY'?'↑':dir==='SELL'?'↓':'→';document.getElementById('directionStrength').textContent=dir==='BUY'?'STRONG UP TREND':dir==='SELL'?'STRONG DOWN TREND':'NEUTRAL MARKET';document.getElementById('trend').textContent=dir==='BUY'?'STRONG UP':dir==='SELL'?'STRONG DOWN':'NEUTRAL';document.getElementById('marketStatus').textContent=(Math.max(buy,sell)>=65)?'GOOD TO TRADE':'CAUTION';document.getElementById('statusText').textContent=(Math.max(buy,sell)>=65)?'Current market conditions are favorable.':'Market direction is not strong enough right now.';document.getElementById('activityValue').textContent=Math.max(buy,sell)>=65?'HIGH':'NORMAL'}
+// Demo data only. Replace the state update with your live XAUUSD API/MT5 feed later.
+setInterval(()=>{clock()},1000);clock();renderNews();render();

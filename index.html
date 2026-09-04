@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#020907">
+  <title>XAUUSD Market Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="gold-icon">◆</div>
+        <div>
+          <h1>XAUUSD</h1>
+          <span>Gold / US Dollar</span>
+        </div>
+      </div>
+      <div class="live"><i></i> LIVE</div>
+      <div class="clock" id="clock">--:--:--</div>
+      <button class="menu" aria-label="Menu">☰</button>
+    </header>
+
+    <section class="status-card" id="statusCard">
+      <div class="status-icon">✓</div>
+      <div>
+        <small>MARKET STATUS</small>
+        <h2 id="marketStatus">GOOD TO TRADE</h2>
+        <p id="statusText">Current market conditions are favorable.</p>
+      </div>
+      <div class="activity">
+        <b id="activityValue">HIGH</b>
+        <span>Market Activity</span>
+      </div>
+    </section>
+
+    <section class="grid two">
+      <article class="card direction-card">
+        <div class="label">1 MINUTE DIRECTION</div>
+        <div class="direction-row">
+          <div class="arrow" id="directionArrow">↑</div>
+          <div>
+            <strong id="direction">BUY</strong>
+            <span id="directionStrength">STRONG UP TREND</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="label">DIRECTION PROBABILITY</div>
+        <div class="prob">
+          <div class="prob-line"><span>BUY</span><b id="buyPct">72%</b><div class="bar"><i id="buyBar"></i></div></div>
+          <div class="prob-line sell"><span>SELL</span><b id="sellPct">28%</b><div class="bar"><i id="sellBar"></i></div></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="grid two">
+      <article class="card price-card">
+        <div class="label">XAUUSD PRICE</div>
+        <div class="price" id="price">2,347.82</div>
+        <div class="change positive" id="change">▲ +4.26 (+0.18%)</div>
+        <div class="price-meta">
+          <span>HIGH <b id="high">2,348.15</b></span>
+          <span>LOW <b id="low">2,343.21</b></span>
+          <span>SPREAD <b id="spread">18</b></span>
+        </div>
+      </article>
+
+      <article class="card chart-card">
+        <div class="label">1 MINUTE CHART</div>
+        <div class="chart">
+          <div class="chart-line"></div>
+          <div class="chart-price" id="chartPrice">2,347.82</div>
+        </div>
+      </article>
+    </section>
+
+    <section class="card condition-card">
+      <div class="label">MARKET CONDITION <span>(REAL-TIME)</span></div>
+      <div class="conditions">
+        <div><b>▥</b><span>Trend</span><strong id="trend">STRONG UP</strong></div>
+        <div><b>〰</b><span>Volatility</span><strong id="volatility">NORMAL</strong></div>
+        <div><b>◉</b><span>Momentum</span><strong id="momentum">STRONG</strong></div>
+        <div><b>♢</b><span>Liquidity</span><strong id="liquidity">GOOD</strong></div>
+        <div><b>↔</b><span>Spread</span><strong id="spreadCondition">LOW (18)</strong></div>
+        <div><b>▣</b><span>News Risk</span><strong id="newsRisk">LOW</strong></div>
+      </div>
+    </section>
+
+    <section class="card news-card">
+      <div class="news-head">
+        <div class="label">UPCOMING USD NEWS <span>(AFFECTS XAUUSD)</span></div>
+        <span class="view">LIVE CALENDAR</span>
+      </div>
+      <div id="newsList"></div>
+    </section>
+
+    <footer>
+      <span>↻ Last Update: <b id="updated">--:--:--</b></span>
+      <span class="live-data">◉ LIVE MARKET DATA</span>
+    </footer>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

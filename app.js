@@ -1,11 +1,30 @@
-const state={price:2347.82,buy:72};
-const news=[
- {time:'14:30',event:'USD — High Impact Economic Data',impact:'HIGH',effect:'High volatility possible'},
- {time:'16:00',event:'USD — ISM Services PMI',impact:'MEDIUM',effect:'Volatility may increase'},
- {time:'19:00',event:'USD — Fed Member Speech',impact:'LOW',effect:'Possible minor movement'}
-];
-function clock(){const d=new Date();const t=d.toLocaleTimeString([], {hour12:false});document.getElementById('clock').textContent=t;document.getElementById('updated').textContent=t}
-function renderNews(){document.getElementById('newsList').innerHTML=news.map(n=>`<div class="news-row"><div class="news-time">${n.time}</div><div>${n.event}</div><div class="impact ${n.impact.toLowerCase()}">${n.impact}</div><div class="effect">${n.effect}</div></div>`).join('')}
-function render(){const buy=state.buy,sell=100-buy;document.getElementById('buyPct').textContent=buy+'%';document.getElementById('sellPct').textContent=sell+'%';document.getElementById('buyBar').style.width=buy+'%';document.getElementById('sellBar').style.width=sell+'%';document.getElementById('price').textContent=state.price.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});document.getElementById('chartPrice').textContent=state.price.toFixed(2);const dir=buy>=55?'BUY':buy<=45?'SELL':'NEUTRAL';document.getElementById('direction').textContent=dir;document.getElementById('directionArrow').textContent=dir==='BUY'?'↑':dir==='SELL'?'↓':'→';document.getElementById('directionStrength').textContent=dir==='BUY'?'STRONG UP TREND':dir==='SELL'?'STRONG DOWN TREND':'NEUTRAL MARKET';document.getElementById('trend').textContent=dir==='BUY'?'STRONG UP':dir==='SELL'?'STRONG DOWN':'NEUTRAL';document.getElementById('marketStatus').textContent=(Math.max(buy,sell)>=65)?'GOOD TO TRADE':'CAUTION';document.getElementById('statusText').textContent=(Math.max(buy,sell)>=65)?'Current market conditions are favorable.':'Market direction is not strong enough right now.';document.getElementById('activityValue').textContent=Math.max(buy,sell)>=65?'HIGH':'NORMAL'}
-// Demo data only. Replace the state update with your live XAUUSD API/MT5 feed later.
-setInterval(()=>{clock()},1000);clock();renderNews();render();
+let lastUpdate=0;
+function $(id){return document.getElementById(id)}
+function clock(){const d=new Date();$('clock').textContent=d.toLocaleTimeString([], {hour12:false})}
+function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function render(d){
+  const buy=Math.max(0,Math.min(100,Number(d.buyPct ?? 50))); const sell=100-buy;
+  $('buy').textContent=buy.toFixed(0)+'%'; $('sell').textContent=sell.toFixed(0)+'%';
+  $('buyBar').style.width=buy+'%'; $('sellBar').style.width=sell+'%';
+  const dir=d.direction || (buy>=55?'BUY':buy<=45?'SELL':'NEUTRAL');
+  $('direction').textContent=dir; $('arrow').textContent=dir==='BUY'?'↑':dir==='SELL'?'↓':'→';
+  $('directionText').textContent=d.directionStrength || (dir==='BUY'?'UP TREND':dir==='SELL'?'DOWN TREND':'NEUTRAL MARKET');
+  $('price').textContent=d.price==null?'—':Number(d.price).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+  $('change').textContent=d.change==null?'—':(Number(d.change)>=0?'▲ +':'▼ ')+Number(d.change).toFixed(2)+' ('+Number(d.changePct||0).toFixed(2)+'%)';
+  $('high').textContent=d.high??'—'; $('low').textContent=d.low??'—'; $('spread').textContent=d.spread??'—';
+  $('candles').textContent=d.candles??'—'; $('m1change').textContent=d.m1Change==null?'—':d.m1Change+'%'; $('activity').textContent=d.activity??'—';
+  const c=d.condition||{}; ['trend','volatility','momentum','liquidity','spreadCondition','newsRisk'].forEach(k=>$(k).textContent=c[k]??'—');
+  const good=d.status==='GOOD TO TRADE';
+  $('status').textContent=d.status || 'WAITING FOR LIVE DATA';
+  $('statusText').textContent=d.statusText || 'Current market analysis.';
+  $('statusCard').style.background=good?'linear-gradient(120deg,#06351d,#03200f)':'linear-gradient(120deg,#241f05,#0c0d07)';
+  const news=d.news||[]; $('news').innerHTML=news.length?news.map(n=>`<div class="news-row"><div class="news-time">${esc(n.time)}</div><div>${esc(n.event)}</div><div class="${String(n.impact||'LOW').toLowerCase()}">${esc(n.impact)}</div><div class="effect">${esc(n.effect)}</div></div>`).join(''):'<div class="empty">No upcoming news supplied.</div>';
+  $('updated').textContent=d.updatedAt?new Date(d.updatedAt).toLocaleTimeString([], {hour12:false}):'—';
+  $('connection').textContent=d.live?'● LIVE MARKET DATA':'● FEED OFFLINE';
+  $('connection').style.color=d.live?'#35f078':'#ff4545';
+}
+async function load(){
+  try{const r=await fetch('/api/market',{cache:'no-store'}); if(!r.ok)throw Error(); const d=await r.json(); render(d); lastUpdate=Date.now();}
+  catch(e){$('connection').textContent='● FEED OFFLINE';$('connection').style.color='#ff4545'}
+}
+setInterval(clock,1000);setInterval(load,5000);clock();load();
